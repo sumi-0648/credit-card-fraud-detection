@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Fraud Detection System</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header>
+        <h2>🛡️ FraudShield</h2>
+        <span>Machine Learning Project</span>
+    </header>
+
+    <main>
+        <section class="hero">
+            <p class="eyebrow">INTELLIGENT TRANSACTION ANALYSIS</p>
+            <h1>Credit Card Fraud Detection</h1>
+            <p>Analyze transaction features and estimate fraud probability.</p>
+        </section>
+
+        <section class="card">
+            <h2>Transaction Details</h2>
+
+            <div class="notice">
+                V1–V28 are transformed numerical features from your dataset.
+                Enter real dataset values for meaningful predictions.
+            </div>
+
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+
+            <form method="POST">
+                <div class="fields">
+                    {% for feature in features %}
+                    <div class="field">
+                        <label for="{{ feature }}">{{ feature }}</label>
+                        <input
+                            type="number"
+                            step="any"
+                            id="{{ feature }}"
+                            name="{{ feature }}"
+                            value="{{ values.get(feature, '0') }}"
+                            {% if feature in ['Time', 'Amount'] %}
+                                min="0"
+                            {% endif %}
+                            required
+                        >
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="actions">
+                    <button class="analyze" type="submit">
+                        Analyze Transaction →
+                    </button>
+                    <a class="reset" href="/">Reset</a>
+                </div>
+            </form>
+        </section>
+
+        {% if result %}
+        <section class="card result
+            {{ 'fraud' if result.is_fraud else 'legitimate' }}">
+
+            <p class="eyebrow">MODEL PREDICTION</p>
+            <h2>{{ result.label }}</h2>
+
+            <div class="score">{{ result.probability }}%</div>
+            <p>Estimated probability of fraud</p>
+
+            <div class="bar">
+                <div style="width: {{ result.probability }}%"></div>
+            </div>
+
+            <p>
+                Classification:
+                <strong>
+                    {{ 'Class 1 — Fraud' if result.is_fraud
+                       else 'Class 0 — Legitimate' }}
+                </strong>
+            </p>
+
+            <small>
+                This is a model estimate, not proof of fraud.
+                Review suspicious transactions before acting.
+            </small>
+        </section>
+        {% endif %}
+
+        <footer>
+            Built using Python, Flask and Random Forest.
+        </footer>
+    </main>
+</body>
+</html>
